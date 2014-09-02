@@ -1,0 +1,118 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 304377
+##  Job Name : Level_adjust
+##  Nodelist : node262
+##      CPUs : 12
+##  Mem/Node : 47104 MB
+## Directory : /gpfs/home/nriabov/McCloskey2014-Sims/Hausman
+##   Started : Thu Jul  3 15:01:23 EDT 2014
+###############################################################################
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2014 The MathWorks, Inc.
+                    R2014a (8.3.0.532) 64-bit (glnxa64)
+                             February 11, 2014
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+[Warning: matlabpool will be removed in a future release.
+Use parpool instead.] 
+Starting matlabpool using the 'local' profile ... [Warning: Found 14 pre-existing communicating job(s) created by pool that are
+running. You can use 'delete(myCluster.Jobs)' to remove all jobs created with
+profile local. To create 'myCluster' use 'myCluster = parcluster('local')'.] 
+connected to 12 workers.
+iter: 1
+Simulation number: 1 / 40
+iter: 1
+Simulation number: 2 / 40
+iter: 1
+Simulation number: 3 / 40
+iter: 1
+Simulation number: 4 / 40
+iter: 1
+Simulation number: 5 / 40
+iter: 1
+Simulation number: 6 / 40
+iter: 1
+Simulation number: 7 / 40
+iter: 1
+Simulation number: 8 / 40
+iter: 1
+Simulation number: 9 / 40
+iter: 1
+Simulation number: 10 / 40
+iter: 1
+Simulation number: 11 / 40
+iter: 1
+Simulation number: 12 / 40
+iter: 1
+Simulation number: 13 / 40
+iter: 1
+Simulation number: 14 / 40
+iter: 1
+Simulation number: 15 / 40
+iter: 1
+Simulation number: 16 / 40
+iter: 1
+Simulation number: 17 / 40
+iter: 1
+Simulation number: 18 / 40
+iter: 1
+Simulation number: 19 / 40
+iter: 1
+Simulation number: 20 / 40
+iter: 1
+Simulation number: 21 / 40
+iter: 1
+Simulation number: 22 / 40
+iter: 1
+Simulation number: 23 / 40
+iter: 1
+Simulation number: 24 / 40
+iter: 1
+Simulation number: 25 / 40
+iter: 3
+Simulation number: 26 / 40
+iter: 3
+Simulation number: 27 / 40
+iter: 1
+Simulation number: 28 / 40
+iter: 1
+Simulation number: 29 / 40
+iter: 1
+Simulation number: 30 / 40
+iter: 1
+Simulation number: 31 / 40
+iter: 1
+Simulation number: 32 / 40
+iter: 1
+Simulation number: 33 / 40
+iter: 1
+Simulation number: 34 / 40
+iter: 1
+Simulation number: 35 / 40
+iter: 1
+Simulation number: 36 / 40
+iter: 1
+Simulation number: 37 / 40
+iter: 1
+Simulation number: 38 / 40
+iter: 1
+Simulation number: 39 / 40
+iter: 1
+Simulation number: 40 / 40
+Elapsed time is 332.099266 seconds.
+**** Parameters ****
+Given parameter values:
+alpha: 0.05
+beta_1: 0.1
+beta_2: 0.05
+h_2: 2
+R: 500000
+g: 40
+alpha_g: 0.005
+****Result****
+alpha_adj:0.04775
+Thu Jul  3 15:07:31 EDT 2014

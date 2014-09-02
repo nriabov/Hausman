@@ -1,0 +1,136 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 851020
+##  Job Name : Power_sim
+##  Nodelist : node529
+##      CPUs : 16
+##  Mem/Node : 61440 MB
+## Directory : /gpfs/home/nriabov/McCloskey2014-Sims/Hausman
+##   Started : Fri Aug  8 13:38:53 EDT 2014
+###############################################################################
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2014 The MathWorks, Inc.
+                    R2014a (8.3.0.532) 64-bit (glnxa64)
+                             February 11, 2014
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+[Warning: matlabpool will be removed in a future release.
+Use parpool instead.] 
+Starting matlabpool using the 'local' profile ... [Warning: Found 36 pre-existing communicating job(s) created by pool that are
+running. You can use 'delete(myCluster.Jobs)' to remove all jobs created with
+profile local. To create 'myCluster' use 'myCluster = parcluster('local')'.] 
+connected to 16 workers.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 57] 
+Elapsed time is 370.194023 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 1 / 64
+Elapsed time is 346.267732 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 2 / 64
+Elapsed time is 335.110057 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 3 / 64
+Elapsed time is 371.165415 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 4 / 64
+Elapsed time is 345.051726 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 5 / 64
+Elapsed time is 328.662646 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 6 / 64
+Elapsed time is 329.212169 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 7 / 64
+Elapsed time is 343.495488 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 8 / 64
+Elapsed time is 365.399101 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 9 / 64
+Elapsed time is 370.682755 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 10 / 64
+Elapsed time is 331.717575 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 11 / 64
+Elapsed time is 344.728955 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 12 / 64
+Elapsed time is 346.574557 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 13 / 64
+Elapsed time is 348.596178 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 14 / 64
+Elapsed time is 370.423646 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 15 / 64
+Elapsed time is 390.923888 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 16 / 64
+Elapsed time is 358.900216 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 17 / 64
+Elapsed time is 376.678396 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 18 / 64
+Elapsed time is 385.077629 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 19 / 64
+Elapsed time is 351.164889 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 20 / 64
+Elapsed time is 333.637469 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 21 / 64
+Elapsed time is 388.304281 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 22 / 64
+Elapsed time is 363.182372 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 23 / 64
+Elapsed time is 350.062336 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 24 / 64
+Elapsed time is 434.041168 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 25 / 64
+Elapsed time is 380.798218 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 26 / 64
+Elapsed time is 385.802362 seconds.
+[Warning: Directory already exists.] 
+[> In local_power_sim_mod_3 at 132] 
+Simulation number: 27 / 64
+Fri Aug  8 16:51:55 EDT 2014
