@@ -18,6 +18,6 @@ eta3_more = ~eta3_leq;
 
 % Compute eta_h_star
 eta_star = eta_2 .* eta3_leq + bsxfun(@times, eta_1, eta3_more);
-
+%eta_star =  eta_2 .* eta3_leq + eta_1 .* eta3_more;
 end
 

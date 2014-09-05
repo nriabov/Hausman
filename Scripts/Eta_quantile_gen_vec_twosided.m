@@ -1,4 +1,4 @@
-function [ eta_quant_mat ] = Eta_quantile_gen_vec_twosided(N, h_1, h_2, alpha, beta )
+function [ eta_quant_pos, eta_quant_neg ] = Eta_quantile_gen_vec_twosided(N, h_1, h_2, alpha, beta )
 %Eta_quantile_gen: This code takes in the sample size per simulation N
 % the number of instruments k_2, the vector of
 % h_1 values h_1, the scalar of h_2 values h_2, the vector of s_k2 s_vec, 
@@ -24,7 +24,8 @@ eta_star = Eta_star_gen_vec( eta_1, eta_2, eta_3, beta);
 
 % Generate the 1 - alpha quantile of the eta_h distribution for each h_1
 %   The output is a |h_1| * |alpha| vector.
-eta_quant_mat = quantile(abs(eta_star), 1 - alpha, 2);
+eta_quant_pos = quantile(eta_star, 1 - alpha, 2);
+eta_quant_neg = quantile(-1*eta_star, 1 - alpha, 2);
 
 end
 

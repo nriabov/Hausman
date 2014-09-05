@@ -1,4 +1,4 @@
-function [ alpha_adj ] = level_adjust_mod_twosided( alpha, beta_1, beta_2, h_2, R, g, alpha_g, psi_up_1, psi_vp_1, psi_uvp_1)
+function [ alpha_adj_pos, alpha_adj_neg ] = level_adjust_mod_twosided( alpha, beta_1, beta_2, h_2, R, g, alpha_g, psi_up_1, psi_vp_1, psi_uvp_1)
 %level_adjust: This function takes in an alpha value between 0 and 1, a
 % beta_1 parameter of eta_h_star between 0 and 1, a
 % beta_2 parameter of the sup of the quantiles between 0 and 1, a positive value of h_2, 
@@ -84,14 +84,16 @@ if (beta_1 <= 0.9 && alpha_g > 0.001)
    if(h_2 <= 0.75) % Get a bigger chunk of the flat section for smaller values of h_2
        min_ind = min(uniq_ind) - 3;
        max_ind = max(uniq_ind) + 3;
+		numval = 20;
    else
        min_ind = min(uniq_ind) - 1;
        max_ind = max(uniq_ind) + 1;
+	   numval = 30;
    end
    
    % Generate a finer grid of h1_vals over the discovered relevant indices,
    % including the padded values
-   h1_vals = linspace(h1_cand(min_ind), h1_cand(max_ind), 30);
+   h1_vals = linspace(h1_cand(min_ind), h1_cand(max_ind), numval);
    
    % Test code
    %eta_quant_test = Eta_quantile_gen_vec(R, h1_vals, h_2, [min(alpha_vec), max(alpha_vec)], beta_1);
@@ -109,21 +111,25 @@ end
 [psi_up, psi_vp, psi_uvp] = Psi_vec_gen(R, p, k_2); % Make the Psi vectors in eq 15
 
 % generate output vector for the entire loop
-alpha_res_vec = zeros(length(h1_vals), length(beta_2));
+alpha_res_vec_pos = zeros(length(h1_vals), length(beta_2));
+alpha_res_vec_neg = zeros(length(h1_vals), length(beta_2));
 
 %Find z_1-beta/2 in order to obtain the index function (for calculating the
 % \mathfrak{h}_1)
 norm_quant = norminv(1 - beta_2/2, 0, 1);
 
-tic
-simnum = 1;
+%tic
+%simnum = 1;
 for h1_ind = 1:length(h1_vals)
     h1_loc = h1_vals(h1_ind);
     h_vec = [h1_loc, h_2]; % Make the local h_vec
     % Generate eta_{1:3},h as in equation 17
     [eta_1, eta_2, eta_3, xi_2] =  Eta_gen_comb(h_vec, psi_up, psi_vp, psi_uvp, s_vec, k_2);
     % Generate eta_h_star, as in equation 20
-    eta_star_twosided = abs(Eta_star_gen(eta_1, eta_2, eta_3, beta_1));
+    eta_star = Eta_star_gen(eta_1, eta_2, eta_3, beta_1);
+    eta_star_neg = -1*eta_star;
+    eta_len = length(eta_star);
+    
     
     % Generate I_beta(xi) from fractile generated earlier
     [I_lo, I_hi] = indicfn(xi_2, norm_quant, h_2);
@@ -145,7 +151,7 @@ for h1_ind = 1:length(h1_vals)
         end
 
         % Calculate and save quantiles c_(h1_loc, h_2, alpha_vec, beta)
-        eta_quant_mat = Eta_quantile_gen_vec_psigiven_twosided(psi_up_1, psi_vp_1, ...
+        [eta_quant_pos, eta_quant_neg] = Eta_quantile_gen_vec_psigiven_twosided(psi_up_1, psi_vp_1, ...
             psi_uvp_1, k_2, h1_loc_val, h_2, s_vec, alpha_vec, beta_1 ); 
 
         % Do parts 2.c through 2.e of the instruction
@@ -157,16 +163,23 @@ for h1_ind = 1:length(h1_vals)
         [~, xi_hi_indices] = min(abs(bsxfun(@minus, I_hi(l,:)', h1_loc_val)),[],2);
         xi_low_indices = cast(xi_low_indices, 'uint32');
         xi_hi_indices = cast(xi_hi_indices, 'uint32');
-
+        
         % Initialize while loop conditions
-        probvals = 1;
+        prob_pos = 1;
+        prob_neg = 1;
         j = 1;
-        while probvals > alpha && j <= g % Stop if either probvals is <= alpha or you reach the end of alpha_vec
+		
+		% Termination Conditions
+        term_cond = true; pos_term = true; neg_term = true;
+        
+        while ((prob_pos > alpha || prob_neg > alpha) && j <= g) && term_cond % Stop if either probvals is <= alpha or you reach the end of alpha_vec
             % Save the sup_eta values
-            sup_eta = zeros(length(xi_2),1);
+            sup_eta_pos = zeros(length(xi_2),1);
+            sup_eta_neg = zeros(length(xi_2),1);
 
             % Take only the quantiles of eta relevant for alpha_j
-            eta_quant_loc = eta_quant_mat(:,j);
+            eta_quant_pos_loc = eta_quant_pos(:,j);
+            eta_quant_neg_loc = eta_quant_neg(:,j);
 
             % Using precalculated quantiles, for each value of xi, 
             % find the index of the closest h1_loc_val to the boundaries of 
@@ -174,37 +187,56 @@ for h1_ind = 1:length(h1_vals)
             % within those boundaries
             % New code: boundary indices xi_low_indices and xi_hi_indices are 
             % precomputed before the while loop.
-
-            parfor xi_ind = 1:length(xi_2)
+            parfor xi_ind = 1:eta_len
                 % Take the values of eta_quant_loc that are between the above
                 % boundaries, and find the sup of the eta_quant_loc over
                 % these boundaries. Then, save this value.
-                sup_eta(xi_ind) = max(eta_quant_loc(xi_low_indices(xi_ind): xi_hi_indices(xi_ind)));
+                sup_eta_pos(xi_ind) = max(eta_quant_pos_loc(xi_low_indices(xi_ind): xi_hi_indices(xi_ind)));
+                sup_eta_neg(xi_ind) = max(eta_quant_neg_loc(xi_low_indices(xi_ind): xi_hi_indices(xi_ind)));
             end
-
+			
             % Calculate the probability values
-            probvals = sum(eta_star_twosided > sup_eta')/length(eta_star_twosided);
+            prob_pos = sum(eta_star > sup_eta_pos')/eta_len;
+            prob_neg = sum(eta_star_neg > sup_eta_neg')/eta_len;
 
+            % Break the loop if conditions are met
+            if(prob_pos <= alpha && pos_term)
+                pos_term = false;
+                j_pos = j;
+            end
+            if(prob_neg <= alpha && neg_term)
+                neg_term = false;
+                j_neg = j;
+            end
+            term_cond = pos_term || neg_term;
+            if(~(term_cond))
+                j = 1;
+                break;
+            end
+            
             % Iterate j
             j = j + 1;
         end
-
         % If probvals <= alpha and j < g, set alpha_res_vec(h_1) = alpha_j
-        if j < g
-            alpha_loc = alpha_vec(j-1); % j-1 because last command in while loop is j = j + 1;
-            alpha_res_vec(h1_ind, l) = alpha_loc; 
-            % Display alpha value 
+        % for the positive and negative alpha
+        if j_pos < g
+            alpha_res_vec_pos(h1_ind, l) = alpha_vec(j_pos);
             %disp(['alpha_h: ', num2str(alpha_loc)])
+        end
+        if j_neg < g
+            alpha_res_vec_neg(h1_ind, l) = alpha_vec(j_neg);
         end
         %parfor_progress;
         %disp(['Simulation number: ',  num2str(simnum), ' / ', num2str(length(h1_vals)*length(beta_2))])
         %simnum = simnum + 1;
+        %toc
     end
 end
-toc
+
 
 % Output alpha_adj from part 3 of the instructions
-alpha_adj = min(alpha_res_vec, [], 1);
+alpha_adj_pos = min(alpha_res_vec_pos, [], 1);
+alpha_adj_neg = min(alpha_res_vec_neg, [], 1);
 
 end
 
