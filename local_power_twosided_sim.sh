@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Request 16 hours of runtime:
-#SBATCH --time=8:00:00
+#SBATCH --time=16:00:00
 
 # Use 46GB of Memory:
 #SBATCH --mem=60GB

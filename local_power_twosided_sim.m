@@ -5,6 +5,9 @@
 % The purpose of this script is to simulate the local power of the Hausman
 % test vs. the TSLS test under various parameter configurations
 
+%cd 'Y:\McCloskey2014-Sims\Hausman'
+%addpath 'Y:\McCloskey2014-Sims\Hausman'
+%addpath 'Y:\McCloskey2014-Sims\Hausman\Scripts'
 cd '/users/nriabov/McCloskey2014-Sims/Hausman/'
 addpath '/users/nriabov/McCloskey2014-Sims/Hausman/'
 addpath '/users/nriabov/McCloskey2014-Sims/Hausman/Scripts'
@@ -16,21 +19,22 @@ matlabpool(feature('numCores')); %Use all cores
 %% Simulation (Level Adjustment)
 
 % Parameters
-alpha = 0.05; 
+alpha = 0.05;
+alpha_half = alpha / 2;
 num_h1 = 9; % Number of h_1 values in the range of h_1 to be simulated
 num_lambda = 100; % Number of lambda values between 0 and lambda_max to be plotted for each h_2
 R = 500000; % Sample size
 %R = 2000000; % Sample size for small values of lambda
 k_2 = 1;
 p = 0;
-alpha_g = alpha / 10;
+alpha_g = alpha_half / 10;
 g = 40;
 
 h2_vec = [0.001, 0.017, 0.028, 0.1, 0.5, 1, 2, 10]; % h_2 values to be tested
 h_1range = [-3000, 4000; % Range of h_1 values
             -180, 240;
             -90, 140;
-            -30, 40;
+            -30, 35;
             -5, 12;
             -5, 10;
             -4, 8;
@@ -50,13 +54,12 @@ R_loc = R;
 
 % Save optimal betas and optimal alpha_adj values
 beta1_optim = zeros(length(h2_vec), length(beta1_vec));
-alpha_adj_optim = beta1_optim;
-
-%parfor_progress(num_h1*length(beta1_vec)*length(h2_vec));
+alpha_adj_optim_pos = beta1_optim;
+alpha_adj_optim_neg = beta1_optim;
 
 mkdir('/users/nriabov/McCloskey2014-Sims/Hausman/beta1search-twosided/');
 cd '/users/nriabov/McCloskey2014-Sims/Hausman/beta1search-twosided/'
-
+t_overall = tic;
 simnum = 1;
 % Simulate local power for different values of beta_1
 for k = 1:length(beta1_vec)
@@ -64,24 +67,30 @@ for k = 1:length(beta1_vec)
     beta_1 = beta1_vec(k);
     loc_dir = ['beta1-', num2str(beta_1)];
     % Simulate the local power for different values of h_1 and h_2
-    for j = 1:3
+    %for j = 3:3
     %for j = length(h2_vec)-2:length(h2_vec)
-    %for j = 1:length(h2_vec)
+    for j = 1:length(h2_vec)
+        t_loc = tic;
         h_2 = h2_vec(j); % Strength of the instrument
 
         % Calculate the level-adjusted alpha for all the possible beta_2
         % associated with beta_1
-        alpha_vec = level_adjust_mod_twosided(alpha, beta_1, beta2_vec, h_2, R, g, alpha_g, psi_up_1, psi_vp_1, psi_uvp_1);
+        [alpha_pos_vec, alpha_neg_vec] = level_adjust_mod_twosided(alpha_half, beta_1, beta2_vec, h_2, R, g, alpha_g, psi_up_1, psi_vp_1, psi_uvp_1);
         % Find the alpha_vec closest to 0.045 and use it. If there's
         % multiple, just use the first one
+        alpha_vec = alpha_pos_vec + alpha_neg_vec;
         [~, closest_ind] = min(abs(alpha_vec - 0.045));
-        alpha_adeq = alpha_vec(closest_ind);
-        alpha_adj = alpha_adeq(1);
+        alpha_pos_adeq = alpha_pos_vec(closest_ind);
+        alpha_neg_adeq = alpha_neg_vec(closest_ind);
+        alpha_pos_adj = alpha_pos_adeq(1);
+        alpha_neg_adj = alpha_neg_adeq(1);
         
         % Save the values of alpha_adj and beta_optimal for further analysis
         beta2_optim_loc = beta2_vec(closest_ind(1));
         beta2_optim(j, k) = beta2_optim_loc;
-        alpha_adj_optim(j, k) = alpha_adj;
+        alpha_adj_optim_pos(j, k) = alpha_pos_adj;
+        alpha_adj_optim_neg(j, k) = alpha_neg_adj;
+
 
         % Generate the lambda
         lambda = linspace(-lambda_max(j), lambda_max(j), num_lambda);
@@ -96,12 +105,12 @@ for k = 1:length(beta1_vec)
         h_1 = [h1_left(1:end-1), h1_right];
 
         % Calculate the local power
-        for i = 1:length(h_1)
-            [ tsls_pow, post_haus_pow ] = local_power_mod_twosided(R, alpha, beta_1, beta2_optim_loc, h_1(i), h_2, lambda, alpha_adj);
+        parfor i = 1:length(h_1)
+            [ tsls_pow, post_haus_pow ] = local_power_mod_twosided(R, alpha_half, beta_1, beta2_optim_loc, h_1(i), h_2, lambda, alpha_pos_adj, alpha_neg_adj);
             tsls_vec(i,:) = tsls_pow;
             post_haus_vec(i,:) = post_haus_pow;
         end
-
+        
         % Save the TSLS power values and the Post-Hausman power
         tsls_vec_perm(:,:,j,k) = tsls_vec;
         post_haus_vec_perm(:,:,j,k) = post_haus_vec;
@@ -114,7 +123,7 @@ for k = 1:length(beta1_vec)
             title_vec = [' $h_1 = ', num2str(h_1(a)), '$'];
             title(title_vec, 'Interpreter', 'latex', 'Fontsize', 13)
             if a == length(h_1)
-                legend('TSLS', 'Hausman', 'Location', 'Southeast');
+                hL = legend('TSLS', 'Hausman', 'Location', 'Southeast', 'Orientation', 'horizontal');
                 xlabel('$\lambda$', 'Interpreter', 'latex', 'Fontsize', 13);
             end
         end
@@ -127,19 +136,28 @@ for k = 1:length(beta1_vec)
             'Visible','off','Units','normalized', 'clipping' , 'off');
         text(0.5, 1, name ,'HorizontalAlignment', ...
             'center','VerticalAlignment', 'top', 'Interpreter', 'latex', 'Fontsize', 13)
+		
+        legend boxoff;
+		newPosition = [0.5, 0.019, 0.06, 0.04];
+		set(hL, 'Position', newPosition, 'Units', 'normalized');
 
         mkdir(loc_dir);
         cd(loc_dir);
 
         % Output the figure to pdf
         saveas(gcf, ['PowerCurves-h2-', num2str(j), '.m']); 
-        disp(['Simulation number: ',  num2str(simnum), ' / ', num2str(length(h2_vec) * (length(beta1_vec) - 1))])
-        simnum = simnum + 1;
-        %PrintFig(['PowerCurves-h2', num2str(h2_vec(j))], gcf);
+        %PrintFig(['PowerCurves-h2-', num2str(h2_vec(j))], gcf);
         cd ..
-        
+        t_loc = toc(t_loc);
+        disp(['Simulation number: ',  num2str(simnum), ' / ', num2str(length(h2_vec) * length(beta1_vec))])
+        simnum = simnum + 1;
+        disp(['This simulation took: ', num2str(t_loc), ' secs'])
     end
 end
 
+t_overall = toc(t_overall);
+disp(['Total Runtime: ', num2str(t_overall./60), ' mins']);
+
 savefile = 'power_out.mat';
-save(savefile, 'beta2_optim', 'alpha_adj_optim', 'tsls_vec_perm', 'post_haus_vec_perm');
+save(savefile, 'beta2_optim', 'alpha_adj_optim_pos', ...
+    'alpha_adj_optim_neg', 'tsls_vec_perm', 'post_haus_vec_perm');
